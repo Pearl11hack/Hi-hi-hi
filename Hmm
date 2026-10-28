@@ -1,0 +1,265 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#070a12">
+<title>1-ci Qrup Fizika | Pro Arxiv</title>
+<style>
+:root{color-scheme:dark;--bg:#070a12;--card:#10172a;--card2:#131d36;--cyan:#22d3ee;--blue:#3b82f6;--violet:#8b5cf6;--text:#e6eefc;--muted:#8aa0c2;--red:#f87171;--green:#34d399}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;overflow-x:hidden}
+button{font:inherit}
+.bg-blur{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.blur{position:absolute;border-radius:50%;filter:blur(90px);opacity:.32;animation:float 12s infinite ease-in-out}
+.b1{width:420px;height:420px;background:#3b82f6;top:-170px;left:-160px}
+.b2{width:360px;height:360px;background:#8b5cf6;top:20%;right:-150px;animation-delay:-4s}
+.b3{width:420px;height:420px;background:#22d3ee;bottom:-220px;left:25%;animation-delay:-8s}
+@keyframes float{50%{transform:translate(25px,-25px) scale(1.08)}}
+nav,.hero,.section{width:min(1120px,100% - 32px);margin-inline:auto}
+nav{padding:22px 0;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.04em}
+.logo-dot{width:11px;height:11px;background:var(--cyan);border-radius:50%;box-shadow:0 0 18px var(--cyan)}
+.pill{font-size:.78rem;color:var(--muted);border:1px solid #293753;border-radius:999px;padding:5px 10px}
+.hero{padding:38px 0 26px;display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:center}
+.hero-title{font-size:clamp(2.2rem,6vw,4.4rem);line-height:1.02;font-weight:850;letter-spacing:-.055em;margin:0}
+.hero-title span{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);margin:16px 0 0;max-width:560px}
+.mock,.card{background:linear-gradient(180deg,rgba(19,29,54,.96),rgba(16,23,42,.96));border:1px solid rgba(255,255,255,.09);border-radius:22px}
+.mock{padding:22px}
+.mock h2{font-size:1.05rem;margin:0 0 8px}
+.formula{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--cyan);font-size:.95rem;line-height:2}
+.muted{color:var(--muted)}
+.section{padding:20px 0 42px}
+.section-heading{margin:0 0 15px;font-size:1.25rem}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.card{padding:20px;min-width:0}
+.card h3{margin:0 0 8px;font-size:1.05rem}
+.card p{margin:0;color:var(--muted);font-size:.9rem}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;margin-top:15px;width:100%;padding:12px 14px;border:0;border-radius:12px;background:linear-gradient(90deg,var(--cyan),var(--blue));color:#06111b;font-weight:800;text-decoration:none;cursor:pointer;transition:filter .2s,transform .2s}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn:focus-visible,.opt:focus-visible{outline:2px solid white;outline-offset:3px}
+.btn.secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.12)}
+#test{max-width:800px;margin:28px auto 0;scroll-margin-top:16px}
+.test-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.progress-wrap{height:7px;background:#26324b;border-radius:99px;overflow:hidden;margin-bottom:20px}
+.progress{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet));transition:width .25s}
+.question{font-size:clamp(1.08rem,2.5vw,1.35rem);line-height:1.4;margin:0 0 16px}
+.options{display:grid;gap:9px}
+.opt{width:100%;text-align:left;padding:13px 14px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);color:var(--text);cursor:pointer;transition:background .2s,border-color .2s}
+.opt:hover:not(:disabled){border-color:rgba(34,211,238,.6);background:rgba(34,211,238,.07)}
+.opt.correct{background:rgba(52,211,153,.13);border-color:var(--green)}
+.opt.wrong{background:rgba(248,113,113,.13);border-color:var(--red)}
+.opt:disabled{cursor:default}
+.feedback{min-height:28px;margin-top:12px;font-weight:650}
+.feedback.good{color:var(--green)}.feedback.bad{color:var(--red)}
+.test-actions{display:flex;gap:10px;flex-wrap:wrap}
+.test-actions .btn{flex:1;min-width:140px}
+.result{display:none;text-align:center;padding:20px 0 5px}
+.score{font-size:2.8rem;font-weight:850;background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 28px}
+@media(max-width:760px){.hero{grid-template-columns:1fr;padding-top:22px}.grid3{grid-template-columns:1fr}.card{padding:18px}.mock{padding:18px}nav,.hero,.section{width:min(100% - 24px,600px)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="bg-blur" aria-hidden="true"><div class="blur b1"></div><div class="blur b2"></div><div class="blur b3"></div></div>
+<nav>
+  <div class="logo"><span class="logo-dot" aria-hidden="true"></span> 1-PHYSICS • PRO</div>
+  <span class="pill">Fizika arxivi</span>
+</nav>
+
+<header class="hero">
+  <div>
+    <h1 class="hero-title">Fizika <span>blok</span><br>bir yerdə.</h1>
+    <p class="lead">1-ci qrup üçün mövzular, əsas düsturlar və interaktiv testlər. Öyrən, cavablandır və nəticəni izlə.</p>
+  </div>
+  <aside class="mock" aria-label="Əsas fizika düsturları">
+    <h2>Əsas düsturlar</h2>
+    <div class="formula">F = ma<br>I = q / t<br>U = IR<br>A = Fs<br>Eₚ = mgh<br>Q = cmΔT</div>
+    <p class="muted">Düsturların mənasını və vahidlərini mövzu üzrə təkrarla.</p>
+  </aside>
+</header>
+
+<main class="section">
+  <h2 class="section-heading">Mövzu bölmələri</h2>
+  <div class="grid3">
+    <article class="card">
+      <h3>Mexanika</h3><p>Hərəkət, qüvvə, iş, enerji və təzyiq.</p>
+      <p class="formula">F = ma · A = Fs · Eₚ = mgh</p>
+      <a class="btn" href="#test" data-topic="mechanics">Mexanika testləri</a>
+    </article>
+    <article class="card">
+      <h3>Elektrodinamika</h3><p>Cərəyan şiddəti, gərginlik və müqavimət.</p>
+      <p class="formula">I = q/t · U = IR · P = UI</p>
+      <a class="btn" href="#test" data-topic="electricity">Elektrik testləri</a>
+    </article>
+    <article class="card">
+      <h3>Molekulyar fizika</h3><p>Temperatur, istilik miqdarı və qaz qanunları.</p>
+      <p class="formula">Q = cmΔT · pV = nRT</p>
+      <a class="btn" href="#test" data-topic="thermal">İstilik testləri</a>
+    </article>
+  </div>
+
+  <section id="test" class="card" aria-labelledby="test-title">
+    <div class="test-top">
+      <span class="pill" id="topic-label">Qarışıq test</span>
+      <span class="muted" id="counter" aria-live="polite">Sual 1 / 6</span>
+    </div>
+    <div class="progress-wrap" role="progressbar" aria-label="Testin gedişi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-wrap"><div class="progress" id="progress"></div></div>
+    <h2 class="question" id="test-title">Kütləsi 2 kq olan cismə 10 N qüvvə təsir edir. Cismin təcili nə qədərdir?</h2>
+    <div class="options" id="options"></div>
+    <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+    <div class="test-actions">
+      <button class="btn secondary" id="restart" type="button">Testi yenidən başlat</button>
+      <button class="btn" id="next" type="button" disabled>Növbəti sual →</button>
+    </div>
+    <div class="result" id="result" aria-live="polite">
+      <div class="muted">Test tamamlandı</div>
+      <div class="score" id="score">0 / 6</div>
+      <p id="result-message"></p>
+      <button class="btn" id="again" type="button">Yenidən həll et</button>
+    </div>
+  </section>
+</main>
+<footer class="footer">1-PHYSICS • PRO — Təkrar üçün hazırlanmış şəxsi fizika arxivi</footer>
+
+<script>
+"use strict";
+
+const questions = [
+  {topic:"mechanics", q:"Kütləsi 2 kq olan cismə 10 N qüvvə təsir edir. Cismin təcili nə qədərdir?", a:["5 m/s²","20 m/s²","0,2 m/s²","12 m/s²"], c:0, explain:"Nyutonun ikinci qanunu: a = F / m = 10 / 2 = 5 m/s²."},
+  {topic:"electricity", q:"Cərəyan şiddəti 2 A, müqavimət 5 Ω-dur. Gərginlik neçə voltdur?", a:["10 V","2,5 V","7 V","0,4 V"], c:0, explain:"Om qanununa görə U = IR = 2 × 5 = 10 V."},
+  {topic:"mechanics", q:"Mexaniki işin SI sistemində vahidi hansıdır?", a:["Joul (J)","Vatt (W)","Volt (V)","Nyuton (N)"], c:0, explain:"İşin vahidi joul (J), gücün vahidi isə vattdır."},
+  {topic:"thermal", q:"Cismin temperaturunu dəyişmək üçün verilən istilik miqdarı hansı düsturla hesablanır?", a:["Q = cmΔT","F = ma","U = IR","P = A/t"], c:0, explain:"Temperatur dəyişəndə Q = cmΔT düsturundan istifadə olunur."},
+  {topic:"mechanics", q:"Kütləsi 3 kq olan cismin 2 m hündürlükdə potensial enerjisi nə qədərdir? g = 10 m/s²", a:["60 J","15 J","6 J","30 J"], c:0, explain:"Eₚ = mgh = 3 × 10 × 2 = 60 J."},
+  {topic:"electricity", q:"Elektrik cərəyanının şiddəti hansı ifadə ilə tapılır?", a:["I = q/t","U = IR","A = Fs","ρ = m/V"], c:0, explain:"Cərəyan şiddəti vahid zamanda keçən yükdür: I = q/t."}
+];
+
+const topicNames = {all:"Qarışıq test", mechanics:"Mexanika", electricity:"Elektrodinamika", thermal:"Molekulyar fizika"};
+let activeQuestions = [...questions];
+let index = 0;
+let score = 0;
+let answered = false;
+
+const questionEl = document.getElementById("test-title");
+const optionsEl = document.getElementById("options");
+const feedbackEl = document.getElementById("feedback");
+const nextBtn = document.getElementById("next");
+const counterEl = document.getElementById("counter");
+const progressEl = document.getElementById("progress");
+const progressWrap = document.getElementById("progress-wrap");
+const topicLabel = document.getElementById("topic-label");
+const resultEl = document.getElementById("result");
+
+function renderQuestion() {
+  const item = activeQuestions[index];
+  answered = false;
+  questionEl.textContent = item.q;
+  optionsEl.replaceChildren();
+  feedbackEl.textContent = "";
+  feedbackEl.className = "feedback";
+  nextBtn.disabled = true;
+  nextBtn.textContent = index === activeQuestions.length - 1 ? "Nəticəni gör →" : "Növbəti sual →";
+  counterEl.textContent = `Sual ${index + 1} / ${activeQuestions.length}`;
+  const percent = (index / activeQuestions.length) * 100;
+  progressEl.style.width = `${percent}%`;
+  progressWrap.setAttribute("aria-valuenow", String(Math.round(percent)));
+  item.a.forEach((answer, answerIndex) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "opt";
+    button.textContent = `${String.fromCharCode(65 + answerIndex)}) ${answer}`;
+    button.addEventListener("click", () => chooseAnswer(answerIndex, button));
+    optionsEl.appendChild(button);
+  });
+}
+
+function chooseAnswer(answerIndex, selectedButton) {
+  if (answered) return;
+  answered = true;
+  const item = activeQuestions[index];
+  const buttons = [...optionsEl.querySelectorAll(".opt")];
+  buttons.forEach((button, i) => {
+    button.disabled = true;
+    if (i === item.c) button.classList.add("correct");
+  });
+  if (answerIndex === item.c) {
+    score++;
+    feedbackEl.textContent = `Düzgündür! ${item.explain}`;
+    feedbackEl.classList.add("good");
+  } else {
+    selectedButton.classList.add("wrong");
+    feedbackEl.textContent = `Bu cavab düzgün deyil. ${item.explain}`;
+    feedbackEl.classList.add("bad");
+  }
+  nextBtn.disabled = false;
+  const percent = ((index + 1) / activeQuestions.length) * 100;
+  progressEl.style.width = `${percent}%`;
+  progressWrap.setAttribute("aria-valuenow", String(Math.round(percent)));
+}
+
+function showResult() {
+  questionEl.hidden = true;
+  optionsEl.hidden = true;
+  feedbackEl.hidden = true;
+  nextBtn.hidden = true;
+  document.getElementById("restart").hidden = true;
+  resultEl.style.display = "block";
+  counterEl.textContent = "Test bitdi";
+  progressEl.style.width = "100%";
+  progressWrap.setAttribute("aria-valuenow", "100");
+  document.getElementById("score").textContent = `${score} / ${activeQuestions.length}`;
+  const ratio = score / activeQuestions.length;
+  document.getElementById("result-message").textContent =
+    ratio === 1 ? "Əla! Bütün suallara düzgün cavab verdin." :
+    ratio >= 0.7 ? "Yaxşı nəticədir. Səhv etdiyin mövzuları bir də təkrarla." :
+    "Düsturları təkrarla və yenidən sına. Məşq etdikcə nəticən yaxşılaşacaq.";
+}
+
+function resetTest(topic = "all") {
+  activeQuestions = topic === "all" ? [...questions] : questions.filter(item => item.topic === topic);
+  if (!activeQuestions.length) activeQuestions = [...questions];
+  index = 0;
+  score = 0;
+  questionEl.hidden = false;
+  optionsEl.hidden = false;
+  feedbackEl.hidden = false;
+  nextBtn.hidden = false;
+  document.getElementById("restart").hidden = false;
+  resultEl.style.display = "none";
+  topicLabel.textContent = topicNames[topic] || topicNames.all;
+  renderQuestion();
+}
+
+nextBtn.addEventListener("click", () => {
+  if (!answered) return;
+  if (index < activeQuestions.length - 1) {
+    index++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+document.getElementById("restart").addEventListener("click", () => resetTest(currentTopic));
+document.getElementById("again").addEventListener("click", () => resetTest(currentTopic));
+
+let currentTopic = "all";
+document.querySelectorAll("[data-topic]").forEach(link => {
+  link.addEventListener("click", () => {
+    currentTopic = link.dataset.topic;
+    resetTest(currentTopic);
+  });
+});
+resetTest();
+</script>
+</body>
+</html>
+'''
+
+path = Path("/mnt/data/1-ci_qrup_fizika_pro.html")
+path.write_text(html, encoding="utf-8")
+print(f"HTML faylı yaradıldı: {path}")
